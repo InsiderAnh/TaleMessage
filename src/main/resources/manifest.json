@@ -1,0 +1,16 @@
+{
+  "Group": "io.github.insideranh",
+  "Name": "TaleMessage",
+  "Version": "1.0.0",
+  "Main": "io.github.insideranh.talemessage.TaleMessage",
+  "Description": "A MiniMessage-style utility for Hytale that allows easy creation of formatted messages using HTML-style tags.",
+  "Authors": [
+    {
+      "Name": "InsiderAnh"
+    }
+  ],
+  "ServerVersion": ">=0.0.1",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "IncludesAssetPack": false
+}
