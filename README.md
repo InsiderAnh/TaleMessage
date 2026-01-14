@@ -1,5 +1,7 @@
 # TaleMessage
 
+[![](https://jitpack.io/v/InsiderAnh/TaleMessage.svg)](https://jitpack.io/#InsiderAnh/TaleMessage)
+
 **TaleMessage** is a MiniMessage-style utility for Hytale that allows easy creation of formatted messages using HTML-style tags, without needing to manually create complex `Message` chains.
 
 ## 🚀 Features
@@ -14,9 +16,47 @@
 
 ## 📦 Installation
 
-### Option 1: Manual Installation (Recommended for Now)
+### Using JitPack
 
-Download the JAR from [Releases](https://github.com/insideranh/TaleMessage/releases) and add it to your project:
+> **📘 Need help?** Check out the [JitPack Installation Guide](JITPACK_GUIDE.md) for detailed instructions and troubleshooting.
+
+Add JitPack repository and the dependency to your project:
+
+**Gradle:**
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compileOnly 'com.github.InsiderAnh:TaleMessage:1.0.0'
+}
+```
+
+**Maven:**
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.InsiderAnh</groupId>
+        <artifactId>TaleMessage</artifactId>
+        <version>1.0.0</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+```
+
+> **Note:** Use `compileOnly` (Gradle) or `provided` scope (Maven) since Hytale server already provides the core Message classes.
+
+### Manual Installation
+
+Alternatively, download the JAR from [Releases](https://github.com/InsiderAnh/TaleMessage/releases) and add it to your project:
 
 **Gradle:**
 ```gradle
@@ -36,32 +76,6 @@ dependencies {
 </dependency>
 ```
 
-### Option 2: Maven Central (Coming Soon)
-
-Once published to Maven Central, you'll be able to add it directly:
-
-**Gradle:**
-```gradle
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compileOnly 'io.github.insideranh:talemessage:1.0.0'
-}
-```
-
-**Maven:**
-```xml
-<dependency>
-    <groupId>io.github.insideranh</groupId>
-    <artifactId>talemessage</artifactId>
-    <version>1.0.0</version>
-    <scope>provided</scope>
-</dependency>
-```
-
-> **Note:** Use `compileOnly` (Gradle) or `provided` scope (Maven) since Hytale server already provides the core Message classes.
 
 ## 🎯 Basic Usage
 

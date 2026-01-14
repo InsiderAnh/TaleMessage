@@ -1,10 +1,9 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'signing'
 }
 
-group = 'io.github.insideranh'
+group = 'com.github.InsiderAnh'
 version = '1.0.0'
 
 java {
@@ -45,3 +44,12 @@ jar {
 test {
     useJUnitPlatform()
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
