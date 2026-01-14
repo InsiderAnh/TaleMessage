@@ -2,23 +2,22 @@
 
 [![](https://jitpack.io/v/InsiderAnh/TaleMessage.svg)](https://jitpack.io/#InsiderAnh/TaleMessage)
 
-**TaleMessage** is a MiniMessage-style utility for Hytale that allows easy creation of formatted messages using HTML-style tags, without needing to manually create complex `Message` chains.
+A MiniMessage-style utility for Hytale that allows easy creation of formatted messages using HTML-style tags.
 
-## 🚀 Features
+## Features
 
-- ✨ Simple MiniMessage-style syntax
-- 🎨 Support for named colors, hexadecimal, and RGB
-- 💪 Formatting: bold, italic, underline, monospace
-- 🌈 Multi-point color gradients
-- 🔗 Nested tags
-- 🛡️ Escape characters
-- 📦 Standalone API (no server required)
+- Simple MiniMessage-style syntax
+- Support for named colors, hexadecimal, and RGB
+- Formatting: bold, italic, underline, monospace
+- Multi-point color gradients
+- Nested tags
+- Escape characters
+- Standalone API (no server required)
 
-## 📦 Installation
+## Installation
 
 ### Using JitPack
 
-> **📘 Need help?** Check out the [JitPack Installation Guide](JITPACK_GUIDE.md) for detailed instructions and troubleshooting.
 
 Add JitPack repository and the dependency to your project:
 
@@ -56,7 +55,7 @@ dependencies {
 
 ### Manual Installation
 
-Alternatively, download the JAR from [Releases](https://github.com/InsiderAnh/TaleMessage/releases) and add it to your project:
+Download the JAR from [Releases](https://github.com/InsiderAnh/TaleMessage/releases):
 
 **Gradle:**
 ```gradle
@@ -76,8 +75,7 @@ dependencies {
 </dependency>
 ```
 
-
-## 🎯 Basic Usage
+## Basic Usage
 
 ### Simple Colors
 
@@ -167,7 +165,7 @@ String escaped = TaleMessage.escape("<html>");
 // Result: "\<html\>"
 ```
 
-## 🎨 Supported Colors
+## Supported Colors
 
 ### Minecraft Colors
 
@@ -230,7 +228,7 @@ Message custom = TaleMessage.parse("<87,142,200>Custom color</87,142,200>");
 Message withSpaces = TaleMessage.parse("<255, 85, 85>With spaces</255, 85, 85>");
 ```
 
-## 📚 Advanced Examples
+## Advanced Examples
 
 ### Error Message
 
@@ -304,7 +302,7 @@ Message chat = TaleMessage.parse(
 );
 ```
 
-## 🔧 API Reference
+## API Reference
 
 ### `TaleMessage.parse(String)`
 
@@ -364,7 +362,7 @@ Creates a gradient message.
 Message gradient = TaleMessage.gradient("Rainbow Text", "red", "yellow", "green", "blue");
 ```
 
-## 🛠️ Build
+## Build
 
 ```bash
 ./gradlew build
@@ -372,21 +370,17 @@ Message gradient = TaleMessage.gradient("Rainbow Text", "red", "yellow", "green"
 
 The JAR will be generated in `build/libs/TaleMessage-1.0.0.jar`
 
-## 📝 License
+## License
 
 This project is licensed under terms that allow use in Hytale projects.
 
-## 👤 Author
+## Author
 
-**InsiderAnh**
+InsiderAnh - [GitHub](https://github.com/InsiderAnh)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome. Please open an issue or pull request.
-
-## 📞 Support
-
-If you find any bugs or have suggestions, please open an issue in the repository.
 
 ---
 
