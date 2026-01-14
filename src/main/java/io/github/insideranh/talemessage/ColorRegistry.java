@@ -46,6 +46,13 @@ public class ColorRegistry {
             return COLORS.get(normalized);
         }
 
+        if (normalized.contains(",")) {
+            Color rgb = parseRGB(normalized);
+            if (rgb != null) {
+                return rgb;
+            }
+        }
+
         return parseHex(normalized);
     }
 
