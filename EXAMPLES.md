@@ -50,6 +50,103 @@ Message complex = TaleMessage.parse(
     "<blue><bold>Server:</bold></blue> " +
     "<white>Players online: <green>50</green>/<green>100</green></white>"
 );
+
+// 13. Minecraft color codes (legacy support)
+Message legacy = TaleMessage.parse("&aGreen text &l&bBold aqua &rReset");
+Message error = TaleMessage.parse("&c&lError: &fSomething went wrong");
+Message info = TaleMessage.parse("&7[&bInfo&7] &fCheck the server status");
+
+// 14. Mix MiniMessage tags with Minecraft codes
+Message mixed = TaleMessage.parse(
+    "&a<bold>Welcome!</bold> &fUse <aqua>/help</aqua> for commands"
+);
+```
+
+## Minecraft Color Codes
+
+TaleMessage supports legacy Minecraft color codes with the `&` symbol:
+
+### Color Codes
+```java
+// Basic colors
+Message colors = TaleMessage.parse(
+    "&0Black &1Dark Blue &2Dark Green &3Dark Aqua\n" +
+    "&4Dark Red &5Dark Purple &6Gold &7Gray\n" +
+    "&8Dark Gray &9Blue &aGreen &bAqua\n" +
+    "&cRed &dLight Purple &eYellow &fWhite"
+);
+
+// Real-world example
+Message serverMsg = TaleMessage.parse("&7[&6Server&7] &fWelcome to the game!");
+```
+
+### Format Codes
+```java
+// Formatting codes
+Message formats = TaleMessage.parse(
+    "&lBold &rReset " +
+    "&nUnderlined &rReset " +
+    "&oItalic &rReset"
+);
+
+// Combined color and format
+Message combined = TaleMessage.parse("&c&lCritical Error! &r&7Please contact an admin");
+```
+
+### Mixed with MiniMessage
+```java
+// You can mix both syntaxes!
+Message hybrid = TaleMessage.parse(
+    "&a&lWelcome! " +
+    "<gradient:aqua:blue>Enjoy your stay</gradient> " +
+    "&7(Version: &f1.0.0&7)"
+);
+
+Message announcement = TaleMessage.parse(
+    "<gradient:gold:yellow>═════════</gradient>\n" +
+    "&e&lAnnouncement:\n" +
+    "&fThe server will restart in &c5 &fminutes!\n" +
+    "<gradient:gold:yellow>═════════</gradient>"
+);
+```
+
+## Clickable Links
+
+```java
+// Basic clickable link
+Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+
+// Clickable link with color
+Message coloredLink = TaleMessage.parse(
+    "<aqua><click:https://github.com>Visit our GitHub</click></aqua>"
+);
+
+// Clickable link with bold
+Message boldLink = TaleMessage.parse(
+    "<gold><bold><click:https://example.com>Click here!</click></bold></gold>"
+);
+
+// Multiple links in one message
+Message multipleLinks = TaleMessage.parse(
+    "<white>Visit our <aqua><click:https://discord.gg>Discord</click></aqua> or " +
+    "<blue><click:https://twitter.com>Twitter</click></blue></white>"
+);
+
+// Link with gradient
+Message gradientLink = TaleMessage.parse(
+    "<click:https://example.com><gradient:blue:purple>Cool gradient link!</gradient></click>"
+);
+
+// Server seed example
+Message seedInfo = TaleMessage.parse(
+    "<green>World seed: <click:https://example.com/seed/12345><gold>12345</gold></click> " +
+    "<gray>(Click to view details)</gray></green>"
+);
+
+// Help command with link
+Message helpCommand = TaleMessage.parse(
+    "&7Need help? <click:https://wiki.example.com><aqua>Click here</aqua></click> to view the wiki!"
+);
 ```
 
 ## Helper Methods

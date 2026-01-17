@@ -13,6 +13,7 @@ public class TagToken {
         UNDERLINE,      // <underline>, <u>
         MONOSPACE,      // <monospace>, <mono>
         GRADIENT,       // <gradient:color1:color2:...>
+        CLICK,          // <click:URL>
         RESET           // </...> closing tags
     }
 

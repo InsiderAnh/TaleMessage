@@ -36,6 +36,23 @@ public class MiniMessageParser {
                 pos += 2;
                 continue;
             }
+            // Handle Minecraft color codes (&a, &b, &l, etc.)
+            if (c == '&' && pos + 1 < input.length()) {
+                char code = input.charAt(pos + 1);
+                TagToken mcToken = createMinecraftColorToken(code);
+                if (mcToken != null) {
+                    if (!textBuffer.isEmpty()) {
+                        stack.peek().addChild(new TagToken(TagToken.Type.TEXT, textBuffer.toString()));
+                        textBuffer.setLength(0);
+                    }
+                    stack.peek().addChild(mcToken);
+                    if (mcToken.getType() != TagToken.Type.TEXT) {
+                        stack.push(mcToken);
+                    }
+                    pos += 2;
+                    continue;
+                }
+            }
 
             if (c == '<') {
                 if (!textBuffer.isEmpty()) {
@@ -109,6 +126,11 @@ public class MiniMessageParser {
             return new TagToken(TagToken.Type.GRADIENT, "", parts);
         }
 
+        if (lowerTag.startsWith("click:")) {
+            String url = tag.substring(6).trim();
+            return new TagToken(TagToken.Type.CLICK, url);
+        }
+
         switch (lowerTag) {
             case "bold", "b" -> {
                 return new TagToken(TagToken.Type.BOLD, "");
@@ -129,6 +151,36 @@ public class MiniMessageParser {
         }
 
         return new TagToken(TagToken.Type.TEXT, "<" + tag + ">");
+    }
+
+    private TagToken createMinecraftColorToken(char code) {
+        return switch (Character.toLowerCase(code)) {
+            // Colors
+            case '0' -> new TagToken(TagToken.Type.COLOR, "black");
+            case '1' -> new TagToken(TagToken.Type.COLOR, "dark_blue");
+            case '2' -> new TagToken(TagToken.Type.COLOR, "dark_green");
+            case '3' -> new TagToken(TagToken.Type.COLOR, "dark_aqua");
+            case '4' -> new TagToken(TagToken.Type.COLOR, "dark_red");
+            case '5' -> new TagToken(TagToken.Type.COLOR, "dark_purple");
+            case '6' -> new TagToken(TagToken.Type.COLOR, "gold");
+            case '7' -> new TagToken(TagToken.Type.COLOR, "gray");
+            case '8' -> new TagToken(TagToken.Type.COLOR, "dark_gray");
+            case '9' -> new TagToken(TagToken.Type.COLOR, "blue");
+            case 'a' -> new TagToken(TagToken.Type.COLOR, "green");
+            case 'b' -> new TagToken(TagToken.Type.COLOR, "aqua");
+            case 'c' -> new TagToken(TagToken.Type.COLOR, "red");
+            case 'd' -> new TagToken(TagToken.Type.COLOR, "light_purple");
+            case 'e' -> new TagToken(TagToken.Type.COLOR, "yellow");
+            case 'f' -> new TagToken(TagToken.Type.COLOR, "white");
+            // Formatting
+            case 'k' -> new TagToken(TagToken.Type.TEXT, "");
+            case 'l' -> new TagToken(TagToken.Type.BOLD, "");
+            case 'm' -> new TagToken(TagToken.Type.TEXT, "");
+            case 'n' -> new TagToken(TagToken.Type.UNDERLINE, "");
+            case 'o' -> new TagToken(TagToken.Type.ITALIC, "");
+            case 'r' -> new TagToken(TagToken.Type.RESET, "");
+            default -> null;
+        };
     }
 
 }

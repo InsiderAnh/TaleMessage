@@ -32,6 +32,8 @@ public class MessageBuilder {
             }
         } else if (token.getType() == TagToken.Type.GRADIENT) {
             message = buildGradient(token, newState);
+        } else if (token.getType() == TagToken.Type.CLICK) {
+            message = buildClickable(token, newState);
         } else {
             for (TagToken child : token.getChildren()) {
                 message.insert(buildRecursive(child, newState));
@@ -134,6 +136,26 @@ public class MessageBuilder {
         }
 
         return root;
+    }
+
+    private static Message buildClickable(TagToken token, FormatState state) {
+        String text = extractText(token);
+        if (text.isEmpty()) {
+            return Message.empty();
+        }
+
+        String url = token.getContent();
+        if (url == null || url.isEmpty()) {
+            Message msg = Message.raw(text);
+            applyFormatting(msg, state);
+            return msg;
+        }
+
+        Message message = Message.raw(text);
+        message.link(url);
+        applyFormatting(message, state);
+
+        return message;
     }
 
     private static String extractText(TagToken token) {

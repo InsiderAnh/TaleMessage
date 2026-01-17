@@ -1,6 +1,8 @@
 package io.github.insideranh.talemessage;
 
 import com.hypixel.hytale.server.core.Message;
+import io.github.insideranh.talemessage.placeholders.Placeholder;
+import io.github.insideranh.talemessage.utils.LanguageUtils;
 
 /**
  * TaleMessage - A MiniMessage-style formatting API for Hytale
@@ -32,11 +34,13 @@ public class TaleMessage {
      *   <li><b>Named colors:</b> red, blue, green, yellow, gold, aqua, etc.</li>
      *   <li><b>Hex colors:</b> #FF5555 or FF5555 (with or without #)</li>
      *   <li><b>RGB colors:</b> 255,85,85 or 255, 85, 85 (R,G,B format with values 0-255)</li>
+     *   <li><b>Minecraft color codes:</b> &amp;0-&amp;f for colors, &amp;l (bold), &amp;o (italic), &amp;n (underline), &amp;r (reset)</li>
      *   <li><b>Bold:</b> {@code <bold>} or {@code <b>}</li>
      *   <li><b>Italic:</b> {@code <italic>}, {@code <i>}, or {@code <em>}</li>
      *   <li><b>Underline:</b> {@code <underline>} or {@code <u>}</li>
      *   <li><b>Monospace:</b> {@code <monospace>} or {@code <mono>}</li>
      *   <li><b>Gradient:</b> {@code <gradient:color1:color2:...>text</gradient>}</li>
+     *   <li><b>Clickable links:</b> {@code <click:URL>text</click>}</li>
      * </ul>
      *
      * <p>Tags can be closed explicitly ({@code </red>}) or with generic closing ({@code </>}).</p>
@@ -56,10 +60,18 @@ public class TaleMessage {
      * Message black = TaleMessage.parse("<0,0,0>Black text</0,0,0>");
      * Message custom = TaleMessage.parse("<128,64,200>Purple-ish</128,64,200>");
      *
+     * // Minecraft color codes
+     * Message mc = TaleMessage.parse("&aGreen text &l&bBold aqua &rReset");
+     * Message legacy = TaleMessage.parse("&c&lError: &fSomething went wrong");
+     *
      * // Gradients work with any color format
      * Message gradient1 = TaleMessage.parse("<gradient:red:blue>Named colors</gradient>");
      * Message gradient2 = TaleMessage.parse("<gradient:#FF0000:#0000FF>Hex colors</gradient>");
      * Message gradient3 = TaleMessage.parse("<gradient:255,0,0:0,0,255>RGB colors</gradient>");
+     *
+     * // Clickable links
+     * Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+     * Message seed = TaleMessage.parse("<green>World seed: <click:https://example.com/seed><gold>12345</gold></click></green>");
      * }</pre>
      *
      * @param input the MiniMessage formatted string
@@ -76,6 +88,201 @@ public class TaleMessage {
         } catch (Exception e) {
             // Fallback to raw text if parsing fails
             return Message.raw(input);
+        }
+    }
+
+    /**
+     * Parse a MiniMessage formatted string into a Hytale Message.
+     *
+     * <p>Supported tags:</p>
+     * <ul>
+     *   <li><b>Named colors:</b> red, blue, green, yellow, gold, aqua, etc.</li>
+     *   <li><b>Hex colors:</b> #FF5555 or FF5555 (with or without #)</li>
+     *   <li><b>RGB colors:</b> 255,85,85 or 255, 85, 85 (R,G,B format with values 0-255)</li>
+     *   <li><b>Minecraft color codes:</b> &amp;0-&amp;f for colors, &amp;l (bold), &amp;o (italic), &amp;n (underline), &amp;r (reset)</li>
+     *   <li><b>Bold:</b> {@code <bold>} or {@code <b>}</li>
+     *   <li><b>Italic:</b> {@code <italic>}, {@code <i>}, or {@code <em>}</li>
+     *   <li><b>Underline:</b> {@code <underline>} or {@code <u>}</li>
+     *   <li><b>Monospace:</b> {@code <monospace>} or {@code <mono>}</li>
+     *   <li><b>Gradient:</b> {@code <gradient:color1:color2:...>text</gradient>}</li>
+     *   <li><b>Clickable links:</b> {@code <click:URL>text</click>}</li>
+     * </ul>
+     *
+     * <p>Tags can be closed explicitly ({@code </red>}) or with generic closing ({@code </>}).</p>
+     * <p>Use {@code \<} and {@code \>} to escape angle brackets.</p>
+     *
+     * <p><b>Examples:</b></p>
+     * <pre>{@code
+     * // Named colors
+     * Message msg = TaleMessage.parse("<red>Error: <bold>File not found</bold></red>");
+     *
+     * // Hex colors
+     * Message hex = TaleMessage.parse("<#FF5555>Custom hex color</#FF5555>");
+     *
+     * // RGB colors (0-255 for each component)
+     * Message rgb = TaleMessage.parse("<255,85,85>Red text</255,85,85>");
+     * Message white = TaleMessage.parse("<255,255,255>White text</255,255,255>");
+     * Message black = TaleMessage.parse("<0,0,0>Black text</0,0,0>");
+     * Message custom = TaleMessage.parse("<128,64,200>Purple-ish</128,64,200>");
+     *
+     * // Minecraft color codes
+     * Message mc = TaleMessage.parse("&aGreen text &l&bBold aqua &rReset");
+     * Message legacy = TaleMessage.parse("&c&lError: &fSomething went wrong");
+     *
+     * // Gradients work with any color format
+     * Message gradient1 = TaleMessage.parse("<gradient:red:blue>Named colors</gradient>");
+     * Message gradient2 = TaleMessage.parse("<gradient:#FF0000:#0000FF>Hex colors</gradient>");
+     * Message gradient3 = TaleMessage.parse("<gradient:255,0,0:0,0,255>RGB colors</gradient>");
+     *
+     * // Clickable links
+     * Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+     * Message seed = TaleMessage.parse("<green>World seed: <click:https://example.com/seed><gold>12345</gold></click></green>");
+     * }</pre>
+     *
+     * @param input the MiniMessage formatted string
+     * @return a Message object with all formatting applied
+     */
+    public static Message parse(String input, Placeholder... placeholders) {
+        if (input == null || input.isEmpty()) {
+            return Message.empty();
+        }
+
+        try {
+            TagToken root = MiniMessageParser.parse(LanguageUtils.replacePlaceholders(input, placeholders));
+            return MessageBuilder.build(root);
+        } catch (Exception e) {
+            // Fallback to raw text if parsing fails
+            return Message.raw(LanguageUtils.replacePlaceholders(input, placeholders));
+        }
+    }
+
+    /**
+     * Parse a MiniMessage formatted string into a Hytale Message.
+     *
+     * <p>Supported tags:</p>
+     * <ul>
+     *   <li><b>Named colors:</b> red, blue, green, yellow, gold, aqua, etc.</li>
+     *   <li><b>Hex colors:</b> #FF5555 or FF5555 (with or without #)</li>
+     *   <li><b>RGB colors:</b> 255,85,85 or 255, 85, 85 (R,G,B format with values 0-255)</li>
+     *   <li><b>Minecraft color codes:</b> &amp;0-&amp;f for colors, &amp;l (bold), &amp;o (italic), &amp;n (underline), &amp;r (reset)</li>
+     *   <li><b>Bold:</b> {@code <bold>} or {@code <b>}</li>
+     *   <li><b>Italic:</b> {@code <italic>}, {@code <i>}, or {@code <em>}</li>
+     *   <li><b>Underline:</b> {@code <underline>} or {@code <u>}</li>
+     *   <li><b>Monospace:</b> {@code <monospace>} or {@code <mono>}</li>
+     *   <li><b>Gradient:</b> {@code <gradient:color1:color2:...>text</gradient>}</li>
+     *   <li><b>Clickable links:</b> {@code <click:URL>text</click>}</li>
+     * </ul>
+     *
+     * <p>Tags can be closed explicitly ({@code </red>}) or with generic closing ({@code </>}).</p>
+     * <p>Use {@code \<} and {@code \>} to escape angle brackets.</p>
+     *
+     * <p><b>Examples:</b></p>
+     * <pre>{@code
+     * // Named colors
+     * Message msg = TaleMessage.parse("<red>Error: <bold>File not found</bold></red>");
+     *
+     * // Hex colors
+     * Message hex = TaleMessage.parse("<#FF5555>Custom hex color</#FF5555>");
+     *
+     * // RGB colors (0-255 for each component)
+     * Message rgb = TaleMessage.parse("<255,85,85>Red text</255,85,85>");
+     * Message white = TaleMessage.parse("<255,255,255>White text</255,255,255>");
+     * Message black = TaleMessage.parse("<0,0,0>Black text</0,0,0>");
+     * Message custom = TaleMessage.parse("<128,64,200>Purple-ish</128,64,200>");
+     *
+     * // Minecraft color codes
+     * Message mc = TaleMessage.parse("&aGreen text &l&bBold aqua &rReset");
+     * Message legacy = TaleMessage.parse("&c&lError: &fSomething went wrong");
+     *
+     * // Gradients work with any color format
+     * Message gradient1 = TaleMessage.parse("<gradient:red:blue>Named colors</gradient>");
+     * Message gradient2 = TaleMessage.parse("<gradient:#FF0000:#0000FF>Hex colors</gradient>");
+     * Message gradient3 = TaleMessage.parse("<gradient:255,0,0:0,0,255>RGB colors</gradient>");
+     *
+     * // Clickable links
+     * Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+     * Message seed = TaleMessage.parse("<green>World seed: <click:https://example.com/seed><gold>12345</gold></click></green>");
+     * }</pre>
+     *
+     * @param input the MiniMessage formatted string
+     * @return a Message object with all formatting applied
+     */
+    public static Message raw(String input) {
+        if (input == null || input.isEmpty()) {
+            return Message.empty();
+        }
+
+        try {
+            TagToken root = MiniMessageParser.parse(input);
+            return MessageBuilder.build(root);
+        } catch (Exception e) {
+            // Fallback to raw text if parsing fails
+            return Message.raw(input);
+        }
+    }
+
+    /**
+     * Parse a MiniMessage formatted string into a Hytale Message.
+     *
+     * <p>Supported tags:</p>
+     * <ul>
+     *   <li><b>Named colors:</b> red, blue, green, yellow, gold, aqua, etc.</li>
+     *   <li><b>Hex colors:</b> #FF5555 or FF5555 (with or without #)</li>
+     *   <li><b>RGB colors:</b> 255,85,85 or 255, 85, 85 (R,G,B format with values 0-255)</li>
+     *   <li><b>Minecraft color codes:</b> &amp;0-&amp;f for colors, &amp;l (bold), &amp;o (italic), &amp;n (underline), &amp;r (reset)</li>
+     *   <li><b>Bold:</b> {@code <bold>} or {@code <b>}</li>
+     *   <li><b>Italic:</b> {@code <italic>}, {@code <i>}, or {@code <em>}</li>
+     *   <li><b>Underline:</b> {@code <underline>} or {@code <u>}</li>
+     *   <li><b>Monospace:</b> {@code <monospace>} or {@code <mono>}</li>
+     *   <li><b>Gradient:</b> {@code <gradient:color1:color2:...>text</gradient>}</li>
+     *   <li><b>Clickable links:</b> {@code <click:URL>text</click>}</li>
+     * </ul>
+     *
+     * <p>Tags can be closed explicitly ({@code </red>}) or with generic closing ({@code </>}).</p>
+     * <p>Use {@code \<} and {@code \>} to escape angle brackets.</p>
+     *
+     * <p><b>Examples:</b></p>
+     * <pre>{@code
+     * // Named colors
+     * Message msg = TaleMessage.parse("<red>Error: <bold>File not found</bold></red>");
+     *
+     * // Hex colors
+     * Message hex = TaleMessage.parse("<#FF5555>Custom hex color</#FF5555>");
+     *
+     * // RGB colors (0-255 for each component)
+     * Message rgb = TaleMessage.parse("<255,85,85>Red text</255,85,85>");
+     * Message white = TaleMessage.parse("<255,255,255>White text</255,255,255>");
+     * Message black = TaleMessage.parse("<0,0,0>Black text</0,0,0>");
+     * Message custom = TaleMessage.parse("<128,64,200>Purple-ish</128,64,200>");
+     *
+     * // Minecraft color codes
+     * Message mc = TaleMessage.parse("&aGreen text &l&bBold aqua &rReset");
+     * Message legacy = TaleMessage.parse("&c&lError: &fSomething went wrong");
+     *
+     * // Gradients work with any color format
+     * Message gradient1 = TaleMessage.parse("<gradient:red:blue>Named colors</gradient>");
+     * Message gradient2 = TaleMessage.parse("<gradient:#FF0000:#0000FF>Hex colors</gradient>");
+     * Message gradient3 = TaleMessage.parse("<gradient:255,0,0:0,0,255>RGB colors</gradient>");
+     *
+     * // Clickable links
+     * Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+     * Message seed = TaleMessage.parse("<green>World seed: <click:https://example.com/seed><gold>12345</gold></click></green>");
+     * }</pre>
+     *
+     * @param input the MiniMessage formatted string
+     * @return a Message object with all formatting applied
+     */
+    public static Message raw(String input, Placeholder... placeholders) {
+        if (input == null || input.isEmpty()) {
+            return Message.empty();
+        }
+
+        try {
+            TagToken root = MiniMessageParser.parse(LanguageUtils.replacePlaceholders(input, placeholders));
+            return MessageBuilder.build(root);
+        } catch (Exception e) {
+            // Fallback to raw text if parsing fails
+            return Message.raw(LanguageUtils.replacePlaceholders(input, placeholders));
         }
     }
 

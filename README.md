@@ -118,6 +118,31 @@ Message u = TaleMessage.parse("<u>Also works</u>");
 Message mono = TaleMessage.parse("<monospace>Monospaced text</monospace>");
 ```
 
+### Minecraft Color Codes
+
+TaleMessage also supports legacy Minecraft color codes with `&`:
+
+```java
+// Color codes (&0-&f)
+Message legacy = TaleMessage.parse("&aGreen text &c&lBold red");
+
+// Format codes
+Message format = TaleMessage.parse("&lBold &nUnderline &oItalic &rReset");
+
+// Mix with MiniMessage tags
+Message mixed = TaleMessage.parse(
+    "&a<bold>Welcome!</bold> " +
+    "<gradient:aqua:blue>Enjoy your stay</gradient> &7(v1.0.0)"
+);
+```
+
+**Supported codes:**
+- Colors: `&0-&f` (black, dark blue, dark green, etc.)
+- Bold: `&l`
+- Italic: `&o`
+- Underline: `&n`
+- Reset: `&r`
+
 ### Nested Tags
 
 ```java
@@ -144,6 +169,28 @@ Message rainbow = TaleMessage.parse(
 // Gradient with formatting
 Message gradBold = TaleMessage.parse(
     "<gradient:blue:purple><bold>Bold gradient</bold></gradient>"
+);
+```
+
+### Clickable Links
+
+```java
+// Simple link
+Message link = TaleMessage.parse("<click:https://facebook.com>Click to open Facebook</click>");
+
+// Link with colors
+Message coloredLink = TaleMessage.parse(
+    "<aqua><click:https://github.com>Visit our GitHub</click></aqua>"
+);
+
+// Link with formatting
+Message styledLink = TaleMessage.parse(
+    "<gold><bold><click:https://example.com>Click here!</click></bold></gold>"
+);
+
+// Complex example
+Message info = TaleMessage.parse(
+    "<green>World seed: <click:https://example.com/seed><gold>12345</gold></click></green>"
 );
 ```
 
@@ -299,6 +346,29 @@ Message chat = TaleMessage.parse(
     "<dark_gray>[</dark_gray><gradient:red:dark_red>Admin</gradient><dark_gray>]</dark_gray> " +
     "<red><bold>{{name}}</bold></red><dark_gray>:</dark_gray> " +
     "<white>{{message}}</white>"
+);
+```
+
+### Server Announcement with Link
+
+```java
+Message announcement = TaleMessage.parse(
+    "<gradient:blue:aqua><bold>━━━━━━━━━━━━━━━━━━━━━━</bold></gradient>\n" +
+    "<yellow><bold>Server Update Available!</bold></yellow>\n" +
+    "<white>Version 2.0 is now available.</white>\n" +
+    "<gray>Read more: <click:https://example.com/changelog><aqua><u>Click here</u></aqua></click></gray>\n" +
+    "<gradient:blue:aqua><bold>━━━━━━━━━━━━━━━━━━━━━━</bold></gradient>"
+);
+```
+
+### World Info with Seed Link
+
+```java
+Message worldInfo = TaleMessage.parse(
+    "<green><bold>World Information</bold></green>\n" +
+    "<gray>• Name: <white>Survival World</white></gray>\n" +
+    "<gray>• Seed: <click:https://example.com/seed/12345><gold>12345</gold></click> <dark_gray>(Click to copy)</dark_gray></gray>\n" +
+    "<gray>• Difficulty: <red>Hard</red></gray>"
 );
 ```
 
