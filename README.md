@@ -45,7 +45,7 @@ dependencies {
     <dependency>
         <groupId>com.github.InsiderAnh</groupId>
         <artifactId>TaleMessage</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
