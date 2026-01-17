@@ -69,7 +69,7 @@ dependencies {
 <dependency>
     <groupId>io.github.insideranh</groupId>
     <artifactId>talemessage</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/libs/TaleMessage-1.0.0.jar</systemPath>
 </dependency>
